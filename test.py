@@ -21,7 +21,7 @@ while True:
     print(f"SpO2 Level: {log['Sp02_level']}%")
     print(f"Temperature: {log['Temperature']}°C")
 
-    confirm = input("Send this log to the server? (yes/no): ").strip().lower()
+    confirm = input("Send this log to the server? (yes/no/exit): ").strip().lower()
     
     if confirm == "y":
         try:
@@ -32,5 +32,7 @@ while True:
                 print(f"❌ Error: {response.json()}")
         except requests.exceptions.RequestException as e:
             print(f"❌ Failed to send log: {e}")
+    if confirm == "exit":
+        break
     
  # Wait before generating the next log
