@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Log Viewer</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            width: 250px;
+            box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2);
+        }
+        .stat-title {
+            font-size: 18px;
+            color: #ffcc00;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .stat-sub {
+            font-size: 14px;
+            margin-top: 10px;
+            color: #bbb;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #1e1e1e;
+            color: #fff;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Health Log</h1>
+
+    <!-- Statistic Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-title">Heart Rate (BPM)</div>
+            <div class="stat-value" id="heartRateAvg">--</div>
+            <div class="stat-sub">Peak: <span id="heartRatePeak">--</span> | Low: <span id="heartRateLow">--</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">SpO2 Level (%)</div>
+            <div class="stat-value" id="spO2Avg">--</div>
+            <div class="stat-sub">Peak: <span id="spO2Peak">--</span> | Low: <span id="spO2Low">--</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Temperature (°C)</div>
+            <div class="stat-value" id="tempAvg">--</div>
+            <div class="stat-sub">Peak: <span id="tempPeak">--</span> | Low: <span id="tempLow">--</span></div>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <table id="logTable">
+        <thead>
+            <tr>
+                <th>Time of Check</th>
+                <th>Heart Beat Rate (BPM)</th>
+                <th>SpO2 Level (%)</th>
+                <th>Temperature (°C)</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        async function fetchLogs() {
+            try {
+                let response = await fetch("/get_logs");
+                let data = await response.json();
+                let tableBody = document.querySelector("#logTable tbody");
+                tableBody.innerHTML = "";
+
+                data.forEach(log => {
+                    let row = `<tr>
+                        <td>${log.time_of_check}</td>
+                        <td>${log.Heart_beat_rate}</td>
+                        <td>${log.Sp02_level}</td>
+                        <td>${log.Temperature}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error fetching logs:", error);
+            }
+        }
+
+        async function fetchStats() {
+            try {
+                let response = await fetch("/stats");
+                let data = await response.json();
+
+                if (data.error) {
+                    console.warn(data.error);
+                    return;
+                }
+
+                document.getElementById("heartRateAvg").innerText = data.Heart_beat_rate.avg;
+                document.getElementById("heartRatePeak").innerText = data.Heart_beat_rate.peak;
+                document.getElementById("heartRateLow").innerText = data.Heart_beat_rate.low;
+
+                document.getElementById("spO2Avg").innerText = data.Sp02_level.avg;
+                document.getElementById("spO2Peak").innerText = data.Sp02_level.peak;
+                document.getElementById("spO2Low").innerText = data.Sp02_level.low;
+
+                document.getElementById("tempAvg").innerText = data.Temperature.avg;
+                document.getElementById("tempPeak").innerText = data.Temperature.peak;
+                document.getElementById("tempLow").innerText = data.Temperature.low;
+
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            }
+        }
+
+        fetchLogs();
+        fetchStats();
+        setInterval(() => {
+            fetchLogs();
+            fetchStats();
+        }, 5000);
+    </script>
+</body>
+</html>
