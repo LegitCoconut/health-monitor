@@ -16,7 +16,7 @@ def index():
 
 @app.route("/get_logs")
 def get_logs():
-    logs = list(logs_collection.find({}, {"_id": 0}))  # Exclude ObjectId
+    logs = list(logs_collection.find({}, {"_id": 0}).sort([("_id", -1)]))  # Exclude ObjectId
     return jsonify(logs)
 
 @app.route("/stats")
