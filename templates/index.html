@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Log Viewer</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
         body {
             background-color: #121212;
@@ -155,15 +156,17 @@
         }
 
         async function showGraph() {
-            let response = await fetch("/generate_graph");
-            let data = await response.json();
-            if (data.image_url) {
-                document.getElementById("graphImage").src = data.image_url;
-                document.getElementById("graphContainer").style.display = "block";
-                document.getElementById("logContainer").style.display = "none";
-            }
-        }
-
+    let response = await fetch("/generate_graph");
+    if (response.ok) {
+        let blob = await response.blob();  // Convert response to an image blob
+        let imgUrl = URL.createObjectURL(blob); // Create a URL for the image
+        document.getElementById("graphImage").src = imgUrl;
+        document.getElementById("graphContainer").style.display = "block";
+        document.getElementById("logContainer").style.display = "none";
+    } else {
+        console.error("Failed to load graph.");
+    }
+}
         function showLog() {
             document.getElementById("graphContainer").style.display = "none";
             document.getElementById("logContainer").style.display = "block";
