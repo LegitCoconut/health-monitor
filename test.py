@@ -3,7 +3,7 @@ import datetime
 import random
 import time
 
-SERVER_URL = "https://health-monitor-legitcoconut.vercel.app/add_log"  # Flask server endpoint
+SERVER_URL = "http://127.0.0.1:5000/add_log"  # Flask server endpoint
 
 def generate_log():
     return {

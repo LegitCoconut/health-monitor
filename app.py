@@ -1,6 +1,10 @@
 from flask import Flask, render_template, jsonify, request
 from pymongo import MongoClient
 import os
+import matplotlib.pyplot as plt
+import pandas as pd
+
+import datetime
 
 app = Flask(__name__)
 
@@ -52,6 +56,36 @@ def add_log():
     
     logs_collection.insert_one(data)
     return jsonify({"message": "Log added successfully"}), 200
+
+
+@app.route("/generate_graph")
+def generate_graph():
+    logs = list(logs_collection.find({}, {"_id": 0}))  
+    if not logs:
+        return jsonify({"error": "No data available"}), 404
+
+    df = pd.DataFrame(logs)
+    df["time_of_check"] = pd.to_datetime(df["time_of_check"])  
+    df.sort_values("time_of_check", inplace=True)
+
+    plt.figure(figsize=(8, 5))
+    plt.plot(df["time_of_check"], df["Heart_beat_rate"], label="Heart Rate (BPM)", marker='o')
+    plt.plot(df["time_of_check"], df["Sp02_level"], label="SpO2 Level (%)", marker='s')
+    plt.plot(df["time_of_check"], df["Temperature"], label="Temperature (°C)", marker='^')
+
+    plt.xlabel("Time of Check")
+    plt.ylabel("Values")
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.grid()
+
+    image_path = "static/graph.png"
+    plt.savefig(image_path, bbox_inches="tight")
+    plt.close()
+
+    return jsonify({"image_url": "/" + image_path})
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")
