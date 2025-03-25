@@ -16,7 +16,7 @@ A simple health monitoring system which collects vital info on the patient and u
 - The monitor device collects data of the patients vitals such as heart_rate, sp02, temperature and also check if the patient has fall or not
 - If vitals are under the minimum value alert will be given in buzzer and other online services ( telegram bot )
 - The collected data is the send to the cloud server using the ESP8266 and the data is stored in the database
-- A realtime log/Analytics is shown in a webpage that the server hosts with some simple statitics
+- A realtime log/Analytics is shown in a webpage that the server hosts with some simple logging of health data and graphical analysis of data.
 
 ## Setup the Arduino Hardware
 
