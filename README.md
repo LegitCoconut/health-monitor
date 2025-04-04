@@ -1,6 +1,3 @@
-Here is a clean, technical, and detailed `README.md` tailored for your **Health Monitoring System** project:
-
----
 
 # 🩺 Health Monitoring System
 
